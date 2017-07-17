@@ -1,0 +1,93 @@
+<beans:beans xmlns="http://www.springframework.org/schema/mvc"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd">
+  <resources mapping="/css/**" location="/css/" />
+  <resources mapping="/images/**" location="/images/" />
+ <annotation-driven />
+	<context:component-scan base-package="com.jury.controller" />
+ 
+	<beans:bean
+		class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+	</beans:bean>
+
+	<beans:bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource"
+		destroy-method="close">
+		<beans:property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<beans:property name="url"
+			value="jdbc:mysql://localhost:3306/jurychar_final" />
+		<beans:property name="username" value="jurychar_final" />
+		<beans:property name="password" value="Test@123" />
+	</beans:bean>
+	<!-- Hibernate 4 SessionFactory Bean definition -->
+	<beans:bean id="hibernate4AnnotatedSessionFactory"
+		class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<beans:property name="dataSource" ref="dataSource" />
+		<beans:property name="annotatedClasses">
+			<beans:list>
+				<beans:value>com.jury.model.User</beans:value>
+				<beans:value>com.jury.model.CaseTypes</beans:value>
+				<beans:value>com.jury.model.SubCases</beans:value>
+				<beans:value>com.jury.model.SubCaseDetail</beans:value>
+				<beans:value>com.jury.model.UserCase</beans:value>
+			</beans:list>
+		</beans:property>
+		<beans:property name="hibernateProperties">
+			<beans:props>
+				<beans:prop key="hibernate.dialect">org.hibernate.dialect.MySQLDialect
+				</beans:prop>
+				<beans:prop key="hibernate.show_sql">true</beans:prop>
+			</beans:props>
+		</beans:property>
+	</beans:bean>
+		<beans:bean id="userDAO" class="com.jury.dao.UserDAOImpl">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="userService" class="com.jury.service.UserServiceImpl">
+		<beans:property name="userDAO" ref="userDAO"></beans:property>
+	</beans:bean>
+	
+	<beans:bean id="caseDAO" class="com.jury.dao.CaseDAOImpl">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="caseService" class="com.jury.service.CaseServiceImpl">
+		<beans:property name="caseDAO" ref="caseDAO"></beans:property>
+	</beans:bean> 
+	
+		<beans:bean id="subCaseDAO" class="com.jury.dao.SubCaseDAOImpl">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="subCaseService" class="com.jury.service.SubCaseServiceImpl">
+		<beans:property name="subCaseDAO" ref="subCaseDAO"></beans:property>
+	</beans:bean> 
+	
+	<beans:bean id="subCaseDetailDAO" class="com.jury.dao.SubCaseDetailDAOImpl">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="subCaseDetailService" class="com.jury.service.SubCaseDetailServiceImpl">
+		<beans:property name="subCaseDetailDAO" ref="subCaseDetailDAO"></beans:property>
+	</beans:bean> 
+	
+	<beans:bean id="userCaseDAO" class="com.jury.dao.UserCaseDAOImpl">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	<beans:bean id="userCaseService" class="com.jury.service.UserCaseServiceImpl">
+		<beans:property name="userCaseDAO" ref="userCaseDAO"></beans:property>
+	</beans:bean> 
+	
+	
+	<tx:annotation-driven transaction-manager="transactionManager"/> 
+	
+	
+	<beans:bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<beans:property name="sessionFactory" ref="hibernate4AnnotatedSessionFactory" />
+	</beans:bean>
+	
+
+	
+</beans:beans>
